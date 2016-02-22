@@ -31,19 +31,24 @@ bot.start
 Contained Commands
 ------------------
 
-[automode (on|off)]
+*[automode (on|off)]*
+
 Enable/disable the plugin in the current channel. Default is off.
 
-[add (op|halfop|voice) nick user@host]
+*[add (op|halfop|voice) nick user@host]*
+
 Add nick with user@host to the auto-(op|halfop|voice) list
 
-[del (op|halfop|voice) nick user@host]
+*[del (op|halfop|voice) nick user@host]*
+
 Delete nick with user@host from the auto-(op|halfop|voice) list
 
-[add channel (op|halfop|voice)]
+*[add channel (op|halfop|voice)]*
+
 Add the entire channel to the list, so anyone who joins gets the mode.
 
-[del channel (op|halfop|voice)]
+*[del channel (op|halfop|voice)]*
+
 Delete the channel from the mode list.
 
 License
