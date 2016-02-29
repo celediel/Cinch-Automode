@@ -12,14 +12,13 @@ module Cinch
     # Automode plugin using Sequel + SQLite database
     class Automode
       include Cinch::Plugin
-      set :prefix, /^\./
       listen_to :join
 
       private
 
       def initialize(*args)
         super
-        @automode = true
+        @automode = {}
         # Initialize the db
         @db = Sequel.sqlite('riria.db')
         # Create the tables if they don't exist
@@ -52,9 +51,9 @@ module Cinch
 
       # reading and writing database methods
       def read_db(nick, hostmask, channel)
-        header 'reading?'
-        puts "db class: #{@db.class}"
-        puts "db tables: #{@db.tables}"
+        # header 'reading?'
+        # puts "db class: #{@db.class}"
+        # puts "db tables: #{@db.tables}"
         return 'no' unless @db.table_exists?(:users)
 
         users = @db[:users] # Users table
@@ -66,11 +65,11 @@ module Cinch
           return chans.where(chan: channel).first[:mode]
         end
 
-        header 'database'
-        puts users.all
-        puts hosts.all
-        puts userchans.all
-        header 'end database'
+        # header 'database'
+        # puts users.all
+        # puts hosts.all
+        # puts userchans.all
+        # header 'end database'
 
         return 'no' if users.where(nick: nick).first.nil?
         return 'admin' if users.where(nick: nick).first[:mode] == 'admin'
@@ -79,11 +78,11 @@ module Cinch
         has_hostmasks = hosts.where(user_id: user_id).map(:mask)
         has_channels = userchans.where(user_id: user_id).map(:chan)
 
-        puts "hostmask: #{hostmask}"
-        puts "hostmasks: #{has_hostmasks}"
-        puts "channels: #{has_channels}"
-        puts "has? #{has_hostmasks.include?(hostmask)}"
-        puts "mode: #{users.where(nick: nick).first[:mode]}"
+        # puts "hostmask: #{hostmask}"
+        # puts "hostmasks: #{has_hostmasks}"
+        # puts "channels: #{has_channels}"
+        # puts "has? #{has_hostmasks.include?(hostmask)}"
+        # puts "mode: #{users.where(nick: nick).first[:mode]}"
 
         return 'no' unless has_hostmasks.include?(hostmask)
         return 'no' unless has_channels.include?(channel)
@@ -91,19 +90,19 @@ module Cinch
       end
 
       def write_db(nick, hostmask, mode, in_chan)
-        header 'writing?'
-        puts "db class: #{@db.class}"
-        puts "db tables: #{@db.tables}"
+        # header 'writing?'
+        # puts "db class: #{@db.class}"
+        # puts "db tables: #{@db.tables}"
 
         users = @db[:users]
         hosts = @db[:hostmasks]
         chans = @db[:userchans]
 
-        header 'database'
-        puts users.all
-        puts hosts.all
-        puts chans.all
-        header 'end database'
+        # header 'database'
+        # puts users.all
+        # puts hosts.all
+        # puts chans.all
+        # header 'end database'
 
         # If user isn't in db, add user to db
         if users.where(nick: nick).first.nil?
@@ -126,15 +125,15 @@ module Cinch
         output = "User #{users.where(nick: nick).first[:nick]} added "
         output << "hostmask #{hosts.where(user_id: user_id).all[-1][:mask]} "
         output << "with mode #{users.where(nick: nick).first[:mode]}"
-        header 'stuff'
-        puts "output: #{output}"
-        puts "user_id: #{user_id}"
+        # header 'stuff'
+        # puts "output: #{output}"
+        # puts "user_id: #{user_id}"
 
-        header 'database'
-        puts users.all
-        puts hosts.all
-        puts chans.all
-        header 'end database'
+        # header 'database'
+        # puts users.all
+        # puts hosts.all
+        # puts chans.all
+        # header 'end database'
 
         output
       end
@@ -148,7 +147,7 @@ module Cinch
         end
         output = "#{chans.where(chan: chan).first[:chan]} "
         output << "added with mode #{chans.where(chan: chan).first[:mode]}"
-        puts output
+        # puts output
         output
       end
 
@@ -157,15 +156,17 @@ module Cinch
       match(/automode (on|off)$/, method: :endisable)
       def endisable(m, option)
         hostmask = m.raw.split(' ')[0].delete(':').split('!')[1]
-        return unless read_db(m.user.nick, hostmask, nil, nil) == 'admin'
-        @automode = option == 'on'
+        return unless read_db(m.user.nick, hostmask, nil) == 'admin'
+        @automode[m.channel] = option == 'on'
 
-        m.reply "Automode is now #{@automode ? 'enabled' : 'disabled'}"
+        m.reply "Automode is now #{@automode[m.channel] ? 'enabled' : 'disabled'}"
       end
 
       def listen(m)
+        @automode[m.channel] ||= true
+        return unless @automode[m.channel]
         return if m.user.nick == bot.nick
-        header 'listen?'
+        # header 'listen?'
         hostmask = m.raw.split(' ')[0].delete(':').split('!')[1]
         mode = read_db(m.user.nick, hostmask, m.channel.to_s)
         case mode
@@ -246,10 +247,10 @@ module Cinch
             m.reply('Baleeted!')
           end
         end
-        header 'database'
-        puts users.all
-        puts hosts.all
-        header 'end database'
+        # header 'database'
+        # puts users.all
+        # puts hosts.all
+        # header 'end database'
       end
     end
   end
