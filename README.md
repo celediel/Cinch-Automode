@@ -11,7 +11,7 @@ add it to your bot like so:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ruby
 require 'cinch'
-require_relative 'plugins/automode.rb'
+require 'cinch/plugins/automode'
 
 bot = Cinch::Bot.new do
 configure do |c|
