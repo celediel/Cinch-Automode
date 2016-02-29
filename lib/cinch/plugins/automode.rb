@@ -44,16 +44,8 @@ module Cinch
         end
       end
 
-      # making shit stand out in the console for debug
-      def header(title)
-        puts '=' * 5 + " #{title} " + '=' * 5
-      end
-
       # reading and writing database methods
       def read_db(nick, hostmask, channel)
-        # header 'reading?'
-        # puts "db class: #{@db.class}"
-        # puts "db tables: #{@db.tables}"
         return 'no' unless @db.table_exists?(:users)
 
         users = @db[:users] # Users table
@@ -65,12 +57,6 @@ module Cinch
           return chans.where(chan: channel).first[:mode]
         end
 
-        # header 'database'
-        # puts users.all
-        # puts hosts.all
-        # puts userchans.all
-        # header 'end database'
-
         return 'no' if users.where(nick: nick).first.nil?
         return 'admin' if users.where(nick: nick).first[:mode] == 'admin'
 
@@ -78,31 +64,15 @@ module Cinch
         has_hostmasks = hosts.where(user_id: user_id).map(:mask)
         has_channels = userchans.where(user_id: user_id).map(:chan)
 
-        # puts "hostmask: #{hostmask}"
-        # puts "hostmasks: #{has_hostmasks}"
-        # puts "channels: #{has_channels}"
-        # puts "has? #{has_hostmasks.include?(hostmask)}"
-        # puts "mode: #{users.where(nick: nick).first[:mode]}"
-
         return 'no' unless has_hostmasks.include?(hostmask)
         return 'no' unless has_channels.include?(channel)
         users.where(nick: nick).first[:mode]
       end
 
       def write_db(nick, hostmask, mode, in_chan)
-        # header 'writing?'
-        # puts "db class: #{@db.class}"
-        # puts "db tables: #{@db.tables}"
-
         users = @db[:users]
         hosts = @db[:hostmasks]
         chans = @db[:userchans]
-
-        # header 'database'
-        # puts users.all
-        # puts hosts.all
-        # puts chans.all
-        # header 'end database'
 
         # If user isn't in db, add user to db
         if users.where(nick: nick).first.nil?
@@ -125,15 +95,6 @@ module Cinch
         output = "User #{users.where(nick: nick).first[:nick]} added "
         output << "hostmask #{hosts.where(user_id: user_id).all[-1][:mask]} "
         output << "with mode #{users.where(nick: nick).first[:mode]}"
-        # header 'stuff'
-        # puts "output: #{output}"
-        # puts "user_id: #{user_id}"
-
-        # header 'database'
-        # puts users.all
-        # puts hosts.all
-        # puts chans.all
-        # header 'end database'
 
         output
       end
@@ -147,7 +108,7 @@ module Cinch
         end
         output = "#{chans.where(chan: chan).first[:chan]} "
         output << "added with mode #{chans.where(chan: chan).first[:mode]}"
-        # puts output
+
         output
       end
 
@@ -166,7 +127,6 @@ module Cinch
         @automode[m.channel] ||= true
         return unless @automode[m.channel]
         return if m.user.nick == bot.nick
-        # header 'listen?'
         hostmask = m.raw.split(' ')[0].delete(':').split('!')[1]
         mode = read_db(m.user.nick, hostmask, m.channel.to_s)
         case mode
@@ -247,10 +207,6 @@ module Cinch
             m.reply('Baleeted!')
           end
         end
-        # header 'database'
-        # puts users.all
-        # puts hosts.all
-        # header 'end database'
       end
     end
   end
