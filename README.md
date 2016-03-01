@@ -14,13 +14,14 @@ require 'cinch'
 require 'cinch/plugins/automode'
 
 bot = Cinch::Bot.new do
-configure do |c|
-  c.server = 'your server'
-  c.nick = 'your nick'
-  c.realname = 'your realname'
-  c.user = 'your user'
-  c.channels = ['#yourchannel']
-  c.plugins.plugins = [Cinch::Plugins::Automode]
+  configure do |c|
+    c.server = 'your server'
+    c.nick = 'your nick'
+    c.realname = 'your realname'
+    c.user = 'your user'
+    c.channels = ['#yourchannel']
+    c.plugins.plugins = [Cinch::Plugins::Automode]
+  end
 end
 
 bot.start
