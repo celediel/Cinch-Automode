@@ -6,6 +6,8 @@ entire channel
 Usage
 -----
 
+[![Gem Version](https://badge.fury.io/rb/Cinch-Automode.svg)](https://badge.fury.io/rb/Cinch-Automode)
+
 install the gem with *gem install Cinch-Automode*, and
 add it to your bot like so:
 
